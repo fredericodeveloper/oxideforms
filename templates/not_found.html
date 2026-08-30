@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.not_found_word }} · OxideForms{% endblock %}
+
+{% block content %}
+<div class="card mx-auto my-10 max-w-md p-10 text-center">
+  <p class="text-6xl font-bold text-neutral-800">404</p>
+  <h1 class="mt-3 text-xl font-semibold text-neutral-100">{{ t.not_found_heading }}</h1>
+  <p class="mt-2 text-sm text-neutral-400">{{ t.not_found_body(uuid) }}</p>
+  <a href="https://github.com/fredericodeveloper/oxideforms" target="_blank" rel="noopener noreferrer" class="btn btn-primary mt-7">{{ t.view_on_github }}</a>
+</div>
+{% endblock %}

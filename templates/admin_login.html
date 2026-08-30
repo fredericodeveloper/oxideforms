@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.admin_word }} · {{ form.title }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-sm">
+  <div class="card p-8">
+    <div class="mb-6 text-center">
+      <div class="mx-auto mb-4 grid h-11 w-11 place-items-center rounded-lg bg-neutral-800 text-accent">
+        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="11" width="14" height="10" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>
+      </div>
+      <h1 class="text-xl font-semibold text-neutral-100">{{ t.admin_heading }}</h1>
+      <p class="mt-1.5 text-sm text-neutral-400">
+        {{ t.admin_prompt(form.title) }}
+      </p>
+    </div>
+
+    {% if let Some(err) = error %}
+      <div class="mb-5 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3 text-sm text-rose-200">{{ err }}</div>
+    {% endif %}
+
+    <form method="post" action="/{{ form.uuid }}/admin/auth" class="space-y-4">
+      <div>
+        <label class="label" for="password">{{ t.admin_password_label }}</label>
+        <input id="password" name="password" type="password" required autofocus
+          class="field-input mt-2" placeholder="••••••••" />
+      </div>
+      <button type="submit" class="btn btn-primary w-full">{{ t.unlock }}</button>
+      <a href="/{{ form.uuid }}" class="block text-center text-sm text-neutral-500 transition hover:text-neutral-200">{{ t.back_to_form }}</a>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.received_word }} · {{ form.title }}{% endblock %}
+
+{% block content %}
+<div class="card mx-auto my-8 max-w-lg p-10 text-center">
+  <div class="mx-auto mb-5 grid h-12 w-12 place-items-center rounded-full bg-emerald-500/10">
+    <svg class="h-6 w-6 text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+  </div>
+  <h1 class="text-2xl font-semibold tracking-tight text-neutral-100">{{ t.success_heading }}</h1>
+  <p class="mt-2 text-neutral-400">
+    {{ t.thanks(form.title) }}
+  </p>
+  <div class="mt-7 flex flex-col justify-center gap-3 sm:flex-row">
+    {% if !form.single_submission %}
+      <a href="/{{ form.uuid }}" class="btn btn-ghost">{{ t.submit_another }}</a>
+    {% endif %}
+    <a href="/{{ form.uuid }}?admin=true" class="btn btn-primary">{{ t.view_submissions }}</a>
+  </div>
+</div>
+{% endblock %}

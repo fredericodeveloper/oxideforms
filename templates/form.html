@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}{{ form.title }} · OxideForms{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-2xl">
+  <div class="mb-6">
+    <h1 class="text-3xl font-semibold tracking-tight text-neutral-100">{{ form.title }}</h1>
+    {% if let Some(desc) = form.description %}
+      <p class="mt-2 leading-relaxed text-neutral-400">{{ desc }}</p>
+    {% endif %}
+  </div>
+
+  {% if multi_page() %}
+    <div class="mb-7 flex items-center gap-4">
+      <div class="flex flex-1 gap-1.5">
+        {% for i in indices() %}
+          <div class="h-1 flex-1 rounded-full {% if i <= page_index %}bg-accent{% else %}bg-neutral-800{% endif %}"></div>
+        {% endfor %}
+      </div>
+      <span class="text-xs tabular-nums text-neutral-500">{{ page_number() }} / {{ page_count() }}</span>
+    </div>
+  {% endif %}
+
+  {% set current = current_page() %}
+  {% if let Some(pt) = current.title %}
+    <h2 class="text-lg font-medium tracking-tight text-neutral-100">{{ pt }}</h2>
+  {% endif %}
+  {% if let Some(pd) = current.description %}
+    <p class="mb-5 mt-1 text-sm leading-relaxed text-neutral-400">{{ pd }}</p>
+  {% endif %}
+
+  {% if errors.len() > 0 %}
+    <div class="mb-6 rounded-lg border border-rose-500/30 bg-rose-500/10 px-4 py-3.5 text-sm text-rose-200">
+      <p class="font-medium">{{ t.fix_below }}</p>
+      <ul class="mt-1 list-disc space-y-0.5 pl-5">
+        {% for e in errors %}
+          <li>{{ e }}</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <form method="post" action="{{ action() }}">
+    <input type="hidden" name="page" value="{{ page_index }}" />
+
+    {# Carry earlier pages' answers through hidden inputs. #}
+    {% for p in pages_before() %}
+      {% for f in p.fields() %}
+        {% for v in f.all_values(values) %}
+          <input type="hidden" name="{{ f.id }}" value="{{ v }}" />
+        {% endfor %}
+      {% endfor %}
+    {% endfor %}
+
+    <div class="space-y-5">
+      {% for field in current.fields() %}
+        <div class="card p-6 sm:p-7">
+          <label class="label" for="{{ field.id }}">
+            {{ field.label }}{% if field.required %} <span class="text-rose-400">*</span>{% endif %}
+          </label>
+          <div class="mt-6">
+            {% if field.input_kind() == "textarea" %}
+              <textarea id="{{ field.id }}" name="{{ field.id }}" rows="4"
+                {% if field.required %}required{% endif %}
+                class="field-area resize-y" placeholder="{{ textarea_placeholder(field) }}">{{ field.prefill(values) }}</textarea>
+
+            {% elif field.input_kind() == "select" || field.input_kind() == "radio" %}
+              {# Single choice: a plain vertical list of radio rows. #}
+              <div class="flex flex-col gap-2">
+                {% for opt in field.options() %}
+                  <label class="flex cursor-pointer items-center gap-3 py-1.5">
+                    <input type="radio" name="{{ field.id }}" value="{{ opt }}"
+                      {% if field.is_checked(values, opt) %}checked{% endif %}
+                      {% if field.required %}required{% endif %}
+                      class="radio" />
+                    <span class="text-[0.95rem] text-neutral-200">{{ opt }}</span>
+                  </label>
+                {% endfor %}
+              </div>
+
+            {% elif field.input_kind() == "checkbox" %}
+              <div class="flex flex-wrap gap-x-6 gap-y-3">
+                {% for opt in field.options() %}
+                  <label class="flex cursor-pointer items-center gap-2.5 text-sm text-neutral-200">
+                    <input type="checkbox" name="{{ field.id }}" value="{{ opt }}"
+                      {% if field.is_checked(values, opt) %}checked{% endif %}
+                      class="checkbox" />
+                    {{ opt }}
+                  </label>
+                {% endfor %}
+              </div>
+
+            {% else %}
+              <input id="{{ field.id }}" name="{{ field.id }}" type="{{ field.input_kind() }}"
+                value="{{ field.prefill(values) }}"
+                {% if field.required %}required{% endif %}
+                class="field-input" placeholder="{{ field.placeholder() }}" />
+            {% endif %}
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div class="flex flex-col-reverse items-center justify-between gap-4 pt-5 sm:flex-row">
+      {% if multi_page() && page_index > 0 %}
+        {# Submits the snapshot form below (via the HTML5 `form` attribute),
+           which carries every answered value back to the previous page. #}
+        <button type="submit" form="back-form" class="btn btn-ghost">← {{ t.back }}</button>
+      {% else %}
+        <p class="text-xs text-neutral-500">
+          {% if form.has_required() %}
+            {{ t.required_hint }}
+          {% endif %}
+        </p>
+      {% endif %}
+      {% if is_last_page() %}
+        <button type="submit" class="btn btn-primary">{{ t.submit }}</button>
+      {% else %}
+        <button type="submit" class="btn btn-primary">{{ t.next }} →</button>
+      {% endif %}
+    </div>
+  </form>
+
+  {% if multi_page() && page_index > 0 %}
+    <form id="back-form" method="post" action="{{ back_action() }}">
+      {% for f in form.fields() %}
+        {% for v in f.all_values(values) %}
+          <input type="hidden" name="{{ f.id }}" value="{{ v }}" />
+        {% endfor %}
+      {% endfor %}
+    </form>
+  {% endif %}
+</div>
+{% endblock %}

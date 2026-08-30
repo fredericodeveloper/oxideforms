@@ -1,0 +1,17 @@
+/target
+
+# Tailwind build tooling (the compiled static/css/tailwind.css is committed)
+node_modules/
+
+# local secrets & runtime artifacts
+.env
+*.db
+*.db-wal
+*.db-shm
+.preview/
+
+# docker-compose runtime data directory (SQLite lives here)
+data/
+
+# user-defined form content (`.json` files), never commit
+forms/

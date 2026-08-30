@@ -1,0 +1,18 @@
+# VCS & agent tooling
+.git/
+.github/
+.agents/
+
+# Build artifacts (rebuilt inside the image)
+target/
+node_modules/
+
+# Local config & runtime data — never bake user content into the image;
+# the container gets forms/ and data/ via mounted volumes.
+.env
+*.db
+*.db-wal
+*.db-shm
+forms/
+data/
+.preview/

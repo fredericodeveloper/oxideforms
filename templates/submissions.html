@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}{{ t.submissions_word }} · {{ form.title }}{% endblock %}
+
+{% block content %}
+<div class="space-y-5">
+  <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+    <div>
+      <h1 class="text-2xl font-semibold tracking-tight text-neutral-100">{{ t.submissions_word }}</h1>
+      <p class="mt-1 text-sm text-neutral-400">
+        {{ t.submissions_subtitle(form.title, rows.len()) }}
+      </p>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <a href="/{{ form.uuid }}?admin=true" class="btn btn-ghost">{{ t.refresh }}</a>
+      <a href="/{{ form.uuid }}/admin/logout" class="btn btn-ghost">{{ t.log_out }}</a>
+      <a href="/{{ form.uuid }}" class="btn btn-primary">{{ t.view_form }}</a>
+    </div>
+  </div>
+
+  {% if rows.len() == 0 %}
+    <div class="card p-12 text-center">
+      <p class="text-base font-medium text-neutral-200">{{ t.no_submissions }}</p>
+      <p class="mx-auto mt-2 max-w-sm text-sm text-neutral-400">{{ t.no_submissions_hint }}</p>
+    </div>
+  {% else %}
+    <div class="card overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="w-full border-collapse text-left text-sm">
+          <thead class="bg-neutral-900 text-[11px] uppercase tracking-wider text-neutral-500">
+            <tr>
+              <th class="px-4 py-3 font-medium">#</th>
+              {% for c in columns %}
+                <th class="whitespace-nowrap px-4 py-3 font-medium">{{ c }}</th>
+              {% endfor %}
+              <th class="whitespace-nowrap px-4 py-3 font-medium">{{ t.submitted_col }}</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-neutral-800">
+            {% for r in rows %}
+              <tr class="transition hover:bg-neutral-800/40">
+                <td class="px-4 py-3 text-neutral-500">{{ loop.index0 + 1 }}</td>
+                {% for cell in r.values() %}
+                  <td class="whitespace-pre-wrap px-4 py-3 align-top text-neutral-200">{{ cell }}</td>
+                {% endfor %}
+                <td class="whitespace-nowrap px-4 py-3 align-top text-neutral-500">{{ r.created_at }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

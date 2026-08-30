@@ -1,0 +1,31 @@
+# OxideForms — Docker Compose configuration.
+#
+#   cp .env.example .env    # set ADMIN_PASSWORD (and PORT if you like)
+#   mkdir -p forms data
+#   docker compose up -d
+#
+# Compose reads the .env in this directory for variable substitution (PORT,
+# ADMIN_PASSWORD). The image is pulled from the GitHub Container Registry;
+# it is built and published automatically by .github/workflows/docker.yml on
+# every push to main and every v* tag.
+
+name: oxideforms
+
+services:
+  oxideforms:
+    image: ghcr.io/fredericodeveloper/oxideforms:latest
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      HOST: 0.0.0.0
+      PORT: 3000
+      FORMS_DIR: /forms
+      DB_PATH: /data/forms.db
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+    volumes:
+      # Form definitions — add/edit/delete .json files on the host and the
+      # container hot-reloads them within ~2 seconds (no restart needed).
+      - ./forms:/forms
+      # SQLite database holding submissions.
+      - ./data:/data
+    restart: unless-stopped

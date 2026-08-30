@@ -1,0 +1,10 @@
+{
+  "name": "oxideforms",
+  "private": true,
+  "scripts": {
+    "build:css": "tailwindcss build -i static/css/input.css -o static/css/tailwind.css --minify"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0"
+  }
+}

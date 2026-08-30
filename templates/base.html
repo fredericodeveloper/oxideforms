@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="{{ t.code }}">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{% block title %}OxideForms{% endblock %}</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%232563eb'%20stroke-width='2'%20stroke-linecap='round'%3E%3Crect%20x='4'%20y='3'%20width='16'%20height='18'%20rx='2'/%3E%3Cpath%20d='M8%208h8M8%2012h8M8%2016h5'/%3E%3C/svg%3E" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/static/css/tailwind.css" />
+  <style>
+    /* Tell the browser this is a dark UI so native widgets (select popups, date
+       pickers, scrollbars) render with a dark appearance instead of white. */
+    :root { color-scheme: dark; }
+
+    /* Number inputs: drop the native up/down spinner. */
+    input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+    input[type="number"]::-webkit-outer-spin-button,
+    input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+
+    /* Custom checkbox: transparent box, accent fill + white tick when checked. */
+    .checkbox {
+      appearance: none; -webkit-appearance: none;
+      height: 1.05rem; width: 1.05rem; flex-shrink: 0; position: relative;
+      border: 1.5px solid #4d4d4d; border-radius: 0.35rem; background-color: transparent;
+      cursor: pointer; transition: background-color .15s ease, border-color .15s ease;
+    }
+    .checkbox:hover { border-color: #6b6b6b; }
+    .checkbox:checked { background-color: #2563eb; border-color: #2563eb; }
+    .checkbox:checked::after {
+      content: ""; position: absolute; inset: 0;
+      background: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='24'%20height='24'%20viewBox='0%200%2024%2024'%20fill='none'%20stroke='%23fff'%20stroke-width='3.5'%20stroke-linecap='round'%20stroke-linejoin='round'%3E%3Cpath%20d='M20%206%209%2017l-5-5'/%3E%3C/svg%3E") center / 72% 72% no-repeat;
+    }
+    .checkbox:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.35); }
+
+    /* Custom radio: transparent ring, accent border + dot when checked. */
+    .radio {
+      appearance: none; -webkit-appearance: none;
+      height: 1.05rem; width: 1.05rem; flex-shrink: 0; position: relative;
+      border: 1.5px solid #4d4d4d; border-radius: 9999px; background-color: transparent;
+      cursor: pointer; transition: border-color .15s ease;
+    }
+    .radio:hover { border-color: #6b6b6b; }
+    .radio:checked { border-color: #2563eb; }
+    .radio:checked::after {
+      content: ""; position: absolute; inset: 0; margin: auto;
+      width: 62%; height: 62%; border-radius: 9999px; background: #2563eb;
+    }
+    .radio:focus-visible { outline: none; box-shadow: 0 0 0 3px rgba(37,99,235,0.35); }
+</style>
+</head>
+<body class="min-h-screen">
+  <div class="mx-auto flex min-h-screen w-full max-w-4xl flex-col px-4 sm:px-6">
+    <header class="flex items-center justify-between py-6">
+      <a href="/" class="flex items-center gap-3">
+        <span class="grid h-8 w-8 place-items-center rounded-md bg-accent text-white">
+          <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h5" /></svg>
+        </span>
+        <span class="text-xl font-semibold tracking-tight text-neutral-100">OxideForms</span>
+      </a>
+      <nav class="flex items-center gap-1.5">
+        <form action="/lang" method="get" class="relative">
+          <input type="hidden" name="next" value="{{ next }}" />
+          <select name="lang" onchange="this.form.submit()" aria-label="{{ t.lang_label }}"
+                  class="cursor-pointer rounded-md border border-neutral-700 bg-neutral-800/60 px-2.5 py-1.5 text-xs font-medium text-neutral-300 transition hover:border-neutral-600 hover:text-neutral-100 focus:outline-none focus:ring-2 focus:ring-accent/40">
+            {% for l in t.languages() %}
+              <option value="{{ l.code() }}" {% if l.code() == t.code %}selected{% endif %}>{{ l.endonym() }}</option>
+            {% endfor %}
+          </select>
+        </form>
+        <a href="https://github.com/fredericodeveloper/oxideforms" target="_blank" rel="noopener noreferrer"
+           class="rounded-md p-2 text-neutral-400 transition hover:bg-neutral-800/60 hover:text-neutral-100" aria-label="{{ t.github_aria }}">
+          <svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.53-1.36-1.28-1.72-1.28-1.72-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.123-.303-.535-1.523.117-3.176 0 0 1.008-.32 3.301 1.2.947-.262 1.956-.39 2.966-.39 1.008 0 2.017.13 2.966.39 2.293-1.52 3.301-1.2 3.301-1.2.653 1.653.241 2.873.118 3.176.77.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.625-5.479 5.92.432.37.813 1.102.813 2.222 0 1.606-.015 2.898-.015 3.293 0 .319.216.694.825.57C20.565 22.095 24 17.597 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+        </a>
+      </nav>
+    </header>
+
+    <main class="flex-1">{% block content %}{% endblock %}</main>
+
+    <footer class="py-8 text-center text-xs">
+      <div class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-neutral-500">
+        <span class="font-medium text-neutral-400">OxideForms</span>
+        <span class="text-neutral-700">·</span>
+        <span>self-hosted forms</span>
+        <span class="text-neutral-700">·</span>
+        <a href="https://github.com/fredericodeveloper/oxideforms" target="_blank" rel="noopener noreferrer" class="group inline-flex items-center gap-1.5 font-medium text-neutral-300 transition hover:text-white">
+          <svg class="h-3.5 w-3.5 text-neutral-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61-.53-1.36-1.28-1.72-1.28-1.72-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.123-.303-.535-1.523.117-3.176 0 0 1.008-.32 3.301 1.2.947-.262 1.956-.39 2.966-.39 1.008 0 2.017.13 2.966.39 2.293-1.52 3.301-1.2 3.301-1.2.653 1.653.241 2.873.118 3.176.77.84 1.235 1.91 1.235 3.22 0 4.61-2.807 5.625-5.479 5.92.432.37.813 1.102.813 2.222 0 1.606-.015 2.898-.015 3.293 0 .319.216.694.825.57C20.565 22.095 24 17.597 24 12.297c0-6.627-5.373-12-12-12"/></svg>
+          {{ t.footer_source }}
+        </a>
+        <span class="text-neutral-700">·</span>
+        <span>{{ t.footer_made_by }}</span>
+        <a href="https://www.frederico.is" target="_blank" rel="noopener noreferrer" class="font-medium text-neutral-300 transition hover:text-white">Frederico Queiroz</a>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>
